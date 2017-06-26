@@ -21,7 +21,7 @@ end
 function EDSCFG.META.HasAccess(self, required_rank) 
 	if EDSCFG.Players[self:SteamID()] == nil then return false end 
 	if isnumber(required_rank) then
-		if EDSCFG.Players[self:SteamID()][2] > required_rank then return false end
+		if EDSCFG.Players[self:SteamID()][2] < required_rank then return false end
 	end
 	return true
 end
@@ -43,6 +43,7 @@ hook.Add( "OnPlayerChat", "EDSCFG.ChatCommand", function( ply, strText, bTeam, b
 	if !EDSCFG.CanEdit(LocalPlayer()) then LocalPlayer():ChatPrint(EDSCFG.Language["NoAuthority"]) return end
 	net.Start("EDSCFG.ReceiveMenu")
 	net.SendToServer()
+	return true
 end)
 
 concommand.Add("eds_menu", function() 
