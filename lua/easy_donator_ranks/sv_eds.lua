@@ -380,9 +380,9 @@ end
 function EDSCFG.META.HasAccess(self, required_rank) 
 	if EDSCFG.Players[self] == nil then return false end 
 	if isnumber(required_rank) then
-		if EDSCFG.Ranks[EDSCFG.Players[self]][1] > required_rank then return false end
+		if EDSCFG.Ranks[EDSCFG.Players[self]][1] < required_rank then return false end
 	else
-		if EDSCFG.Ranks[required_rank] == nil or EDSCFG.Ranks[EDSCFG.Players[self]][1] > EDSCFG.RankPower[required_rank] then return false end
+		if EDSCFG.Ranks[required_rank] == nil or EDSCFG.Ranks[EDSCFG.Players[self]][1] < EDSCFG.RankPower[required_rank] then return false end
 	end
 	return true
 end
@@ -451,10 +451,19 @@ end
 Hooks
 ---------------------------------------------------------------------------*/
 
-hook.Add("PlayerInitialSpawn", "EDSCFG.InitialSpawn", function(ply)
+local function loadRankForPlayer(ply)
+	if !IsValid(ply) then return end
 	ply:EDSCFG("LoadPlayersRank")
 	ply:EDSCFG("SendOthersRank")
 	hook.Call("EDSCFG.PlayerLoaded", nil, ply, EDSCFG.Players[ply], EDSCFG.RankPower[EDSCFG.Players[ply]], EDSCFG.PrivateRank[EDSCFG.Players[ply]])
+end
+// Auto refresh
+for k, v in ipairs(player.GetHumans()) do
+	loadRankForPlayer(v)
+end
+
+hook.Add("PlayerInitialSpawn", "EDSCFG.InitialSpawn", function(ply)
+	loadRankForPlayer(ply)
 end)
 
 hook.Add("PlayerDisconnected", "EDSCFG.Disconnected", function(ply)
