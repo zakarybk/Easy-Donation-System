@@ -198,6 +198,14 @@ function EDSCFG.UpdateSendTable(ply, rank, remove)
 			ply:EDSCFG("SendRank", remove, rank)
 		elseif EDSCFG.PrivateRank[rank] and EDSCFG.PrivateRank[old] == nil then // If their old rank wasn't private, but their new one is, update players.
 			ply:EDSCFG("SendRank", true, rank)
+			ply:ChatPrint("oi2")
+			timer.Simple(0.01, function()
+				net.Start("EDSCFG.SendRank")
+					net.WriteString(ply:SteamID())
+					net.WriteString(rank)
+					net.WriteInt(EDSCFG.RankPower[rank], EDSCFG.IntPowerSize)
+				net.Send(ply)
+			end)
 		end
 	end
 	local com = util.Compress(util.TableToJSON(EDSCFG.SendTable))
