@@ -293,7 +293,11 @@ function EDSCFG.UpdateSync(ply, old, new, source)
 	if EDSCFG.Sync[new] then
 		EDSCFG.UpdateSendTable(ply, EDSCFG.Sync[new], false)
 	elseif EDSCFG.Sync[old] then
-		EDSCFG.UpdateSendTable(ply, "", true)
+		// See if they have a stored rank
+		local load = EDSCFG.META.LoadPlayersRank(ply)
+		if !load then
+			EDSCFG.UpdateSendTable(ply, "", true)
+		end
 	end
 end
 hook.Add("CAMI.PlayerUsergroupChanged", "EDSCFG.UpdateSync", EDSCFG.UpdateSync)
@@ -370,7 +374,7 @@ function EDSCFG.META.LoadPlayersRank(self)
 	local sync_rank = EDSCFG.Sync[self:GetUserGroup()]
 	if sync_rank then
 		if rank then
-			print(rank, ";", sync_rank)
+//			print(rank, ";", sync_rank)
 			if EDSCFG.RankPower[sync_rank] > EDSCFG.RankPower[rank] then
 				rank = sync_rank
 			end
@@ -378,7 +382,7 @@ function EDSCFG.META.LoadPlayersRank(self)
 			rank = sync_rank
 		end
 	end
-	if !rank then return end
+	if !rank then return false end
 	if EDSCFG.Ranks[rank] == nil then return false, "Rank '" .. rank .. "' not found!" end
 	EDSCFG.UpdateSendTable(self, rank, false)
 	return true
